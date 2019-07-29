@@ -44,7 +44,9 @@ Param (
 New-AzureRmResourceGroup -Name $ResourceGroup -Location $Location
 Start-Sleep 10
 New-AzureRmAutomationAccount -Name $AutomationAccountName -Location $Location -ResourceGroupName $ResourceGroup -Plan Free
-Start-Sleep 40
+Start-Sleep 30
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $automationAccountName –Name TestRunBookPSImport -Type PowerShell –Path "C:\Scripts/AzureAutomationTutorialScript.ps1" 
+
 
 function CreateSelfSignedCertificate([string] $certificateName, [string] $selfSignedCertPlainPassword,
     [string] $certPath, [string] $certPathCer, [string] $selfSignedCertNoOfMonthsUntilExpired ) {
