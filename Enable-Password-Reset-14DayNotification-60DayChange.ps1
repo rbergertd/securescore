@@ -1,10 +1,5 @@
-﻿# Import the Azure Active Directory PowerShell Module 
-
-Import-Module MSOnline
-
-# Authenticate with a global administrator
-
-Connect-MsolService
+﻿$cred = Get-AutomationPSCredential -Name "MSOnline"
+Connect-MsolService -Credential $cred
 
 $recommendedValidityPeriod = 60
 $notificationDays = 14

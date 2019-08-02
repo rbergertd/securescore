@@ -1,5 +1,5 @@
-﻿Import-Module MSOnline
-Connect-MsolService
+﻿$cred = Get-AutomationPSCredential -Name "MSOnline"
+Connect-MsolService -Credential $cred
 
 Write-Host 'Setting all 365 user passwords to Never Expire - 10 Points'
 $Userexpire = Get-MSOLUser | Where-Object {$_.PasswordNeverExpires -eq $false}
