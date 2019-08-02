@@ -41,11 +41,18 @@ Param (
     [int] $SelfSignedCertNoOfMonthsUntilExpired = 12
 )
 
+# Create the Automation account, install the modules, and then import the runbooks.
+
 New-AzureRmResourceGroup -Name $ResourceGroup -Location $Location
 Start-Sleep 10
 New-AzureRmAutomationAccount -Name $AutomationAccountName -Location $Location -ResourceGroupName $ResourceGroup -Plan Free
-Start-Sleep 30
-Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $automationAccountName –Name TestRunBookPSImport -Type PowerShell –Path "C:\Scripts/AzureAutomationTutorialScript.ps1" 
+Start-Sleep 45
+New-AzureRmAutomationModule -Name MSOnline -ContentLinkUri "https://github.com/rbergertd/securescore/raw/master/Modules/MSOnline.zip" -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccountName
+Start-Sleep 15
+New-AzureRmAutomationModule -Name AzureAD -ContentLinkUri "https://github.com/rbergertd/securescore/raw/master/Modules/AzureAD.zip" -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccountName
+Start-Sleep 15
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $automationAccountName –Name TestRunBookPSImport -Type PowerShell –Path "C:\Scripts/AzureAutomationTutorialScript.ps1"
+
 
 
 function CreateSelfSignedCertificate([string] $certificateName, [string] $selfSignedCertPlainPassword,
@@ -113,7 +120,7 @@ if (!(($AzureRMProfileVersion.Major -ge 3 -and $AzureRMProfileVersion.Minor -ge 
 # Enable-AzureRmAlias
 
 
-Connect-AzureRmAccount -Environment $EnvironmentName
+#Connect-AzureRmAccount -Environment $EnvironmentName
 $Subscription = Select-AzureRmSubscription -SubscriptionId $SubscriptionId
 
 # Create a Run As account by using a service principal
