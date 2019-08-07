@@ -1,0 +1,1 @@
+Connect-EXOPSSession -UserPrincipalName ryan.berger@tdsolutionfactory.onmicrosoft.com
