@@ -8,9 +8,10 @@ $ScheduleName = 'SecureScore Daily Run'
 #$StringPassWord ='C@Pc0m10'
 $Password = ConvertTo-SecureString "M1chA3lbrie183" -AsPlainText -Force
 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $Password
+$manualCredential = Get-Credential
 
 # Manually connect to Azure - we need to automate both of these with a Vertex deployment
-Connect-AzureRmAccount
+Connect-AzureRmAccount -Credential $manualCredential
 Connect-MsolService
 
 # Import modules
@@ -35,9 +36,35 @@ New-AzureRmAutomationModule -Name MSOnline -ContentLinkUri "https://github.com/r
 Start-Sleep 15
 New-AzureRmAutomationModule -Name AzureAD -ContentLinkUri "https://github.com/rbergertd/securescore/raw/master/Modules/AzureAD.zip" -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccountName
 Start-Sleep 15
+New-AzureRmAutomationModule -Name Microsoft.Online.SharePoint.PowerShell -ContentLinkUri "https://github.com/rbergertd/securescore/raw/master/Modules/Microsoft.Online.SharePoint.PowerShell.zip" -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccountName
+
+
 # Importing RunBooks 
 # We'll run an import, publish the imported runbook, and then register the runbook to the schedule we created so that it runs daily at 24:00.
 Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-MailBoxAudit-AuditRecording -Type PowerShell –Path "C:\Scripts\Enable-MailBoxAudit-AuditRecording.ps1"
 Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-MailBoxAudit-AuditRecording -ResourceGroupName $ResourceGroup
 Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-MailBoxAudit-AuditRecording -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
 
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Create-ATP-Policies -Type PowerShell –Path "C:\Scripts\Create-ATP-Policies.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Create-ATP-Policies -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Create-ATP-Policies -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-DLP-Policies -Type PowerShell –Path "C:\Scripts\Enable-DLP-Policies.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-DLP-Policies -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-DLP-Policies -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Disallow-Anonymous-Calendar-Sharing -Type PowerShell –Path "C:\Scripts\Disallow-Anonymous-Calendar-Sharing.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Disallow-Anonymous-Calendar-Sharing -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Disallow-Anonymous-Calendar-Sharing -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-OutboundSpamNotifications -Type PowerShell –Path "C:\Scripts\Enable-OutboundSpamNotifications.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-OutboundSpamNotifications -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-OutboundSpamNotifications -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-TransportRule-ClientForwardingBlock -Type PowerShell –Path "C:\Scripts\Enable-TransportRule-ClientForwardingBlock.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-TransportRule-ClientForwardingBlock -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-TransportRule-ClientForwardingBlock -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-Password-Expiration -Type PowerShell –Path "C:\Scripts\Enable-Password-Expiration.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-Password-Expiration -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-Password-Expiration -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
