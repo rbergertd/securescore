@@ -1,7 +1,7 @@
-Import-Module MSOnline
-Connect-MsolService
+$cred = Get-AutomationPSCredential -Name "MSOnline"
+Connect-MsolService -Credential $cred
 
-#Enable MFA for "Company Administrators"
+#Enable MFA for "Company Administrators" aka Global Admins
 
 $multiFactor = New-Object -TypeName Microsoft.Online.Administration.StrongAuthenticationRequirement
 $multiFactor.RelyingParty = "*"

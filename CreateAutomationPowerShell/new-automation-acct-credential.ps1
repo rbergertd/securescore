@@ -3,12 +3,17 @@ $AutomationAccountName = 'SecureScore'
 $Location = 'EastUS2'
 $StartTime = Get-Date "23:59:00"
 $EndTime = $StartTime.AddYears(5)
+#How can we pass the tenant domain through into this (through Vertex)?
 $User = 'SecureScore@domain.onmicrosoft.com'
 $ScheduleName = 'SecureScore Daily Run'
-#$StringPassWord ='C@Pc0m10'
-$Password = ConvertTo-SecureString "M1chA3lbrie183" -AsPlainText -Force
+#Collect secure string password thru Vertex UI then pass it into the script and convert to SecurePassword. May need to chat with Pat on this. This does not work with the New-MsolUser command - I think it sets the password to System.Security.SecureString
+$Password = 'C@Pc0m10'
+$SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $Password
+#For manual testing.
 $manualCredential = Get-Credential
+
+
 
 # Manually connect to Azure - we need to automate both of these with a Vertex deployment
 Connect-AzureRmAccount -Credential $manualCredential
@@ -19,9 +24,11 @@ Import-Module MSOnline
 Import-Module AzureRm
 
 # Create the O365 admin user
-New-MsolUser -UserPrincipalName $User -DisplayName “Secure Score Admin” -FirstName “Secure” -LastName “Score” -Password $Password -PasswordNeverExpires $true -ForceChangePassword $false
+New-MsolUser -UserPrincipalName $User -DisplayName “Secure Score Automation” -FirstName “Secure” -LastName “Score” -Password $Password -PasswordNeverExpires $true -ForceChangePassword $false
 Start-Sleep 15
-Add-MsolRoleMember -RoleName “Company Administrator” –RoleMemberEmailAddress $User
+Add-MsolRoleMember -RoleName “Exchange Service Administrator” –RoleMemberEmailAddress $User
+Start-Sleep 10
+Add-MsolRoleMember -RoleName "User Account Administrator" -RoleMemberEmailAddress $User
 
 # Create the Automation account, create the credential (using the O365 admin user), install the modules, and then import the runbooks.
 
