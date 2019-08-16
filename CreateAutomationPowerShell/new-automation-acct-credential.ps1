@@ -26,9 +26,7 @@ Import-Module AzureRm
 # Create the O365 admin user
 New-MsolUser -UserPrincipalName $User -DisplayName “Secure Score Automation” -FirstName “Secure” -LastName “Score” -Password $Password -PasswordNeverExpires $true -ForceChangePassword $false
 Start-Sleep 15
-Add-MsolRoleMember -RoleName “Exchange Service Administrator” –RoleMemberEmailAddress $User
-Start-Sleep 10
-Add-MsolRoleMember -RoleName "User Account Administrator" -RoleMemberEmailAddress $User
+Add-MsolRoleMember -RoleName “Company Administrator” –RoleMemberEmailAddress $User
 
 # Create the Automation account, create the credential (using the O365 admin user), install the modules, and then import the runbooks.
 
@@ -55,3 +53,8 @@ Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAcc
 Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-Password-Expiration -Type PowerShell –Path "C:\Scripts\Enable-Password-Expiration.ps1"
 Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-Password-Expiration -ResourceGroupName $ResourceGroup
 Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-Password-Expiration -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
+Import-AzureRmAutomationRunbook -ResourceGroup $ResourceGroup –AutomationAccountName $AutomationAccountName –Name Enable-GlobalAdmin-Mfa -Type PowerShell –Path "C:\Scripts\Enable-GlobalAdminMFA.ps1"
+Publish-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -Name Enable-GlobalAdmin-Mfa -ResourceGroupName $ResourceGroup
+Register-AzureRmAutomationScheduledRunbook -AutomationAccountName $AutomationAccountName -Name Enable-GlobalAdmin-Mfa -ScheduleName $ScheduleName -ResourceGroupName $ResourceGroup
+
