@@ -1,23 +1,42 @@
-﻿$ResourceGroup = 'RB-SecureScoreAA'
-$AutomationAccountName = 'SecureScore'
+﻿#Vertex UI Parameters to collect through UI to pass into PowerShell script
+
+#Resource Group name
+$ResourceGroup = 'RB-SecureScoreAA'
+
+#Automation Account name
+$AutomationAccountName = 'Azure SecureScore Automation'
+
+#Location to deploy the Azure Automation Account 
 $Location = 'EastUS2'
-$StartTime = Get-Date "23:59:00"
-$EndTime = $StartTime.AddYears(5)
-#How can we pass the tenant domain through into this (through Vertex)?
-$User = 'SecureScore@domain.onmicrosoft.com'
+
+#Schedule Name - this should be HIDDEN
 $ScheduleName = 'SecureScore Daily Run'
+
+#Schedule Start time (in UTC) - this should be HIDDEN
+$StartTime = Get-Date "23:59:00"
+
+#End Time - this should be HIDDEN from the customer
+$EndTime = $StartTime.AddYears(5)
+
+#Tenant Name - they will need to input their tenant name (the one they created during checkout)
+$Domain = 'tdsolutionfactory'
+
+#User name - this should be HIDDEN from the customer. We always want this to be SecureScore@($Domain).onmicrosoft.com
+$User = "SecureScore@$($Domain).onmicrosoft.com"
+
 #Collect secure string password thru Vertex UI then pass it into the script and convert to SecurePassword. May need to chat with Pat on this. This does not work with the New-MsolUser command - I think it sets the password to System.Security.SecureString
-$Password = 'C@Pc0m10'
-$SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
+$Password = 'mySup3RseKreeetPW123'
+
+#We do not need to collect this via Vertex UI, just build it based off of $User and $Password.
 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $Password
+#$SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
+
+#Connect to Azure tenant and connect to O365 Tenant - this needs to be automated on the Vertex side - connect with our Admin account?
 #For manual testing.
-$manualCredential = Get-Credential
-
-
-
+#$manualCredential = Get-Credential
 # Manually connect to Azure - we need to automate both of these with a Vertex deployment
-Connect-AzureRmAccount -Credential $manualCredential
-Connect-MsolService
+#Connect-AzureRmAccount -Credential $manualCredential
+#Connect-MsolService
 
 # Import modules
 Import-Module MSOnline
