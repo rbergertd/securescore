@@ -55,7 +55,7 @@ New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domains[0].Name)" -Nam
 Set-Mailbox -Identity "ATPRedirectedMessages@$($Domains[0].Name)" -HiddenFromAddressListsEnabled $True
 Add-MailboxPermission -Identity "ATPRedirectedMessages@$($Domains[0].Name)" -AutoMapping $false -InheritanceType All -User $cred.UserName -AccessRights FullAccess
 New-SafeAttachmentPolicy -Name 'Default Safe Attachment Policy' -AdminDisplayName 'Default Safe Attachment Policy' -Action Replace -Redirect $True -RedirectAddress "ATPRedirectedMessages@$($Domains[0].Name)" -Enable $True
-New-SafeAttachmentRule -Name 'Default Safe Link Policy' -RecipientDomainIs $Domains.Name -SafeAttachmentPolicy Default -Enabled $True
+New-SafeAttachmentRule -Name 'Default Safe Attachment Rule' -RecipientDomainIs $Domains.Name -SafeAttachmentPolicy 'Default Safe Attachment Policy' -Enabled $True
 # Create a new Safe Links policy.
 New-SafeLinksPolicy -Name Default -AdminDisplayName Default -TrackClicks $true -IsEnabled $true -AllowClickThrough $false -ScanUrls $true
 New-SafeLinksRule -Name Default -RecipientDomainIs $Domains.Name -SafeLinksPolicy Default -Enabled $true
