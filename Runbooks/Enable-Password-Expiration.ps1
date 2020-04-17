@@ -2,7 +2,7 @@
 Connect-MsolService -Credential $cred
 
 Write-Host 'Setting all 365 user passwords to Never Expire - 10 Points'
-$Userexpire = Get-MSOLUser | Where-Object {$_.PasswordNeverExpires -eq $false}
+$Userexpire = Get-MSOLUser | Where-Object {$_.PasswordNeverExpires -ne $true}
 if ($Userexpire.Count -eq "0") {
   Write-Host '***All user passwords are already set to never expire'
 } else {
