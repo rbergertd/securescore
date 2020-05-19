@@ -10,7 +10,8 @@ $NotifyOutboundSpamRecipients = (Get-MsolCompanyInformation).TechnicalNotificati
 $Clientrules = Get-TransportRule | Select Name
 $Clientdlp = Get-DlpPolicy
 $AtpMailbox = Get-Mailbox
-$Domains = Get-AcceptedDomain
+$Domains = (Get-AcceptedDomain | Where-Object {$_.Default -eq $true}) 
+$DomainsName = (Get-AcceptedDomain | Where-Object {$_.Default -eq $true}).Name
 $SafeAttachmentPolicies = Get-SafeAttachmentPolicy
 $SafeLinksPolicies = Get-SafeLinksPolicy
 
@@ -20,7 +21,7 @@ $SafeLinksPolicies = Get-SafeLinksPolicy
 #Enable Outbound Spam Filtering Rules
 #Automation Variables
 $OutboundSpamFilteringRules_Enabled = Get-AutomationVariable -Name "OutboundSpamFilteringRules_Enabled"
-
+Get-AcceptedDomain
 #debug
 #$OutboundSpamFilteringRules_Enabled = "Yes"
 
