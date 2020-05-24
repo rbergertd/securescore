@@ -11,7 +11,7 @@ $Clientrules = Get-TransportRule | Select Name
 $Clientdlp = Get-DlpPolicy
 $AtpMailbox = Get-Mailbox
 $Domains = (Get-AcceptedDomain | Where-Object {$_.Default -eq $true}) 
-$DomainsName = (Get-AcceptedDomain | Where-Object {$_.Default -eq $true}).Name
+$Domain = Get-AutomationVariable -Name "SCM_Domain"
 $SafeAttachmentPolicies = Get-SafeAttachmentPolicy
 $SafeLinksPolicies = Get-SafeLinksPolicy
 
@@ -21,9 +21,8 @@ $SafeLinksPolicies = Get-SafeLinksPolicy
 #Enable Outbound Spam Filtering Rules
 #Automation Variables
 $OutboundSpamFilteringRules_Enabled = Get-AutomationVariable -Name "OutboundSpamFilteringRules_Enabled"
-Get-AcceptedDomain
-#debug
-#$OutboundSpamFilteringRules_Enabled = "Yes"
+
+#debug : $OutboundSpamFilteringRules_Enabled = "Yes"
 
 if($OutboundSpamFilteringRules_Enabled -Like "Yes") {
     Get-HostedOutboundSpamFilterPolicy | Set-HostedOutboundSpamFilterPolicy -NotifyOutboundSpam $true -NotifyOutboundSpamRecipients $NotifyOutboundSpamRecipients
@@ -33,8 +32,7 @@ if($OutboundSpamFilteringRules_Enabled -Like "Yes") {
 #Automation Variables
 $ClientForwardBlockRules_Enabled = Get-AutomationVariable -Name "ClientForwardBlockRules_Enabled" 
 
-#debug
-#$ClientForwardBlockRules_Enabled = "Yes"
+#debug: $ClientForwardBlockRules_Enabled = "Yes"
 
 if($ClientForwardBlockRules_Enabled -Like "Yes") {
     
@@ -52,14 +50,13 @@ if($ClientForwardBlockRules_Enabled -Like "Yes") {
 }
 
 #Automation Variables
-#DLPRules_Enabled = Get-AutomationVariable -Name "DLPRules_Enabled"
-#DLPRules_Selection = Get-AutomationVariable -Name "DLPRules_Selection"
-#DLPRules_DeploymentMode = Get-AutomationVariable -Name "DLPRules_DeploymentMode"
+DLPRules_Enabled = Get-AutomationVariable -Name "DLPRules_Enabled"
+DLPRules_Selection = Get-AutomationVariable -Name "DLPRules_Selection"
+DLPRules_DeploymentMode = Get-AutomationVariable -Name "DLPRules_DeploymentMode"
 
-#debug
-#$DLPRules_Enabled = "Yes"
-#$DLPRules_Selection = "US" #Available options are US,Australia, Canada, France, Germany, Isreal
-#$DLPRules_DeploymentMode= "AuditAndNotify"
+#debug: $DLPRules_Enabled = "Yes"
+#debug: $DLPRules_Selection = "US" #Available options are US,Australia, Canada, France, Germany, Isreal
+#debug: $DLPRules_DeploymentMode= "AuditAndNotify"
 
 if($DLPRules_Enabled -Like "Yes") {
 
@@ -221,9 +218,8 @@ if($DLPRules_Enabled -Like "Yes") {
 $SafeAttachmentRules_Enabled = Get-AutomationVariable -Name "SafeAttachmentRules_Enabled"
 $SafeLinkRules_Enabled = Get-AutomationVariable -Name "SafeLinkRules_Enabled"
 
-#debug
-#$SafeAttachmentRules_Enabled = "Yes"
-#$SafeLinkRules_Enabled = "Yes"
+#debug: $SafeAttachmentRules_Enabled = "Yes"
+#debug: $SafeLinkRules_Enabled = "Yes"
 
 if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Yes") {
 
@@ -232,20 +228,20 @@ if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Ye
         Write-Output '***Configuration for ATP Mailbox and Default ATP Policies Already Exist'
     }
     else {
-        New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domains[0].Name)" -Name ATPRedirectedMessages -DisplayName ATPRedirectedMessages -Password (ConvertTo-SecureString -AsPlainText -Force (([char[]]([char]33 .. [char]95) + ([char[]]([char]97 .. [char]126)) + 0 .. 9 | sort { Get-Random })[0 .. 8] -join '')) -MicrosoftOnlineServicesID "ATPRedirectedMessages@$($Domains[0].Name)"
-        Set-Mailbox -Identity "ATPRedirectedMessages@$($Domains[0].Name)" -HiddenFromAddressListsEnabled $True
-        Add-MailboxPermission -Identity "ATPRedirectedMessages@$($Domains[0].Name)" -AutoMapping $false -InheritanceType All -User $cred.UserName -AccessRights FullAccess
+        New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domain)" -Name ATPRedirectedMessages -DisplayName ATPRedirectedMessages -Password (ConvertTo-SecureString -AsPlainText -Force (([char[]]([char]33 .. [char]95) + ([char[]]([char]97 .. [char]126)) + 0 .. 9 | sort { Get-Random })[0 .. 8] -join '')) -MicrosoftOnlineServicesID "ATPRedirectedMessages@$($Domains[0].Name)"
+        Set-Mailbox -Identity "ATPRedirectedMessages@$($Domain)" -HiddenFromAddressListsEnabled $True
+        Add-MailboxPermission -Identity "ATPRedirectedMessages@$($Domain)" -AutoMapping $false -InheritanceType All -User $cred.UserName -AccessRights FullAccess
 
         # Create a new Safe Attachment policy.
         if($SafeAttachmentRules_Enabled -Like "Yes") {
-            New-SafeAttachmentPolicy -Name 'Default Safe Attachment Policy' -AdminDisplayName 'Default Safe Attachment Policy' -Action Replace -Redirect $True -RedirectAddress "ATPRedirectedMessages@$($Domains[0].Name)" -Enable $True
-            New-SafeAttachmentRule -Name 'Default Safe Attachment Rule' -RecipientDomainIs $Domains.Name -SafeAttachmentPolicy 'Default Safe Attachment Policy' -Enabled $True
+            New-SafeAttachmentPolicy -Name 'Default Safe Attachment Policy' -AdminDisplayName 'Default Safe Attachment Policy' -Action Replace -Redirect $True -RedirectAddress "ATPRedirectedMessages@$($Domain)" -Enable $True
+            New-SafeAttachmentRule -Name 'Default Safe Attachment Rule' -RecipientDomainIs $Domain -SafeAttachmentPolicy 'Default Safe Attachment Policy' -Enabled $True
         }
 
         # Create a new Safe Links policy.
         if($SafeLinkRules_Enabled -Like "Yes") {
             New-SafeLinksPolicy -Name Default -AdminDisplayName Default -TrackClicks $true -IsEnabled $true -AllowClickThrough $false -ScanUrls $true
-            New-SafeLinksRule -Name Default -RecipientDomainIs $Domains.Name -SafeLinksPolicy Default -Enabled $true
+            New-SafeLinksRule -Name Default -RecipientDomainIs $Domain -SafeLinksPolicy Default -Enabled $true
         }
     }
 }
@@ -254,8 +250,7 @@ if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Ye
 #Automation Variables
 $AnonymousCalendarSharingRules_Enabled = Get-AutomationVariable -Name "AnonymousCalendarSharingRules_Enabled"
 
-#debug
-#$AnonymousCalendarSharingRules_Enabled = "Yes"
+#debug: $AnonymousCalendarSharingRules_Enabled = "Yes"
 
 if($AnonymousCalendarSharingRules_Enabled -Like "Yes") {
     Get-SharingPolicy | Set-SharingPolicy -Domains @{ Remove = "Anonymous:CalendarSharingFreeBusyReviewer"; Add = "Anonymous:0" }
@@ -267,8 +262,7 @@ if($AnonymousCalendarSharingRules_Enabled -Like "Yes") {
 #Automation Variables
 $MailboxAuditingRules_Enabled = Get-AutomationVariable -Name "MailboxAuditingRules_Enabled"
 
-#debug
-#$MailboxAuditingRules_Enabled = "Yes"
+#debug: $MailboxAuditingRules_Enabled = "Yes"
 
 if($MailboxAuditingRules_Enabled -Like "Yes") {
     Get-Mailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "UserMailbox" -or RecipientTypeDetails -eq "SharedMailbox" -or RecipientTypeDetails -eq "RoomMailbox" -or RecipientTypeDetails -eq "DiscoveryMailbox"} | Set-Mailbox -AuditEnabled $true -AuditLogAgeLimit 730 -AuditAdmin Update, MoveToDeletedItems, SoftDelete, HardDelete, SendAs, SendOnBehalf, Create, UpdateFolderPermission -AuditDelegate Update, SoftDelete, HardDelete, SendAs, Create, UpdateFolderPermissions, MoveToDeletedItems, SendOnBehalf -AuditOwner UpdateFolderPermission, MailboxLogin, Create, SoftDelete, HardDelete, Update, MoveToDeletedItems 
