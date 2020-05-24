@@ -70,12 +70,20 @@ if($DLPRules_Enabled -Like "Yes") {
                 Write-Output '***DLP for U.S. State Breach Notification Laws Installed'               
             }
            
-            if ($Clientdlp.Name -Like "U.S. Personally Identifiable Information (PII) Data") {
-                Write-Output '***DLP for U.S. State Breach Notification Laws Already Exists -- DLP Rule Not Installed'
+            if ($Clientdlp.Name -Like "U.S. State Social Security Number Confidentiality Laws") {
+                Write-Output '***DLP for U.S. State Social Security Number Confidentiality Laws Already Exists -- DLP Rule Not Installed'
             } else {
-                New-DlpPolicy -Name "U.S. Personally Identifiable Information (PII) Data" -Mode $DLPRules_DeploymentMode -Template 'U.S. Personally Identifiable Information (PII) Data';
-                Write-Output '***DLP for U.S. State Breach Notification Laws Installed'
+                New-DlpPolicy -Name "U.S. State Social Security Number Confidentiality Laws" -Mode $DLPRules_DeploymentMode -Template 'U.S. State Social Security Number Confidentiality Laws';
+                Write-Output '***DLP for U.S. State Social Security Number Confidentiality Laws Installed'
             }
+
+            if ($Clientdlp.Name -Like "U.S. Financial Data") {
+                Write-Output '***DLP for U.S. Financial Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.S. Financial Data" -Mode $DLPRules_DeploymentMode -Template 'U.S. Financial Data';
+                Write-Output '***DLP for U.S. Financial Data Installed'
+            }
+
         }
         "Australia"{
             if ($Clientdlp.Name -Like "Australia Financial Data") {
@@ -113,13 +121,6 @@ if($DLPRules_Enabled -Like "Yes") {
                 New-DlpPolicy -Name "Canada Health Information Act (HIA)" -Mode $DLPRules_DeploymentMode -Template 'Canada Health Information Act (HIA)';
                 Write-Output '***DLP for Canada Health Information Act (HIA) Installed'
             }
-
-            if ($Clientdlp.Name -Like "Canada Personal Health Act (PHIPA) – Ontario") {
-                Write-Output '***DLP for Canada Personal Health Act (PHIPA) – Ontario Data Already Exists -- DLP Rule Not Installed'
-            } else {
-                New-DlpPolicy -Name "Canada Personal Health Act (PHIPA) – Ontario" -Mode $DLPRules_DeploymentMode -Template 'Canada Personal Health Act (PHIPA) – Ontario';
-                Write-Output '***DLP for Canada Personal Health Act (PHIPA) – Ontario Installed'
-            }
             
             if ($Clientdlp.Name -Like "Canada Personal Health Information Act (PHIA) - Manitoba") {
                 Write-Output '***DLP for Canada Personal Health Information Act (PHIA) - Manitoba Already Exists -- DLP Rule Not Installed'
@@ -135,11 +136,11 @@ if($DLPRules_Enabled -Like "Yes") {
                 Write-Output '***DLP for Canada Personal Information Protection Act (PIPA) Installed'
             }
 
-            if ($Clientdlp.Name -Like "Canada Personally Identifiable Protection Act (PIPEDA)") {
-                Write-Output '***DLP for Canada Personally Identifiable Protection Act (PIPEDA) Already Exists -- DLP Rule Not Installed'
+            if ($Clientdlp.Name -Like "Canada Personal Information Protection Act (PIPEDA)") {
+                Write-Output '***DLP for Canada Personal Information Protection Act (PIPEDA) Already Exists -- DLP Rule Not Installed'
             } else {
-                New-DlpPolicy -Name "Canada Personally Identifiable Protection Act (PIPEDA)" -Mode $DLPRules_DeploymentMode -Template 'Canada Personally Identifiable Protection Act (PIPEDA)';
-                Write-Output '***DLP for Canada Personally Identifiable Protection Act (PIPEDA) Installed'
+                New-DlpPolicy -Name "Canada Personal Information Protection Act (PIPEDA)" -Mode $DLPRules_DeploymentMode -Template 'Canada Personal Information Protection Act (PIPEDA)';
+                Write-Output '***DLP for Canada Personal Information Protection Act (PIPEDA) Installed'
             }
 
             if ($Clientdlp.Name -Like "Canada Personally Identifiable Information (PII) Data") {
@@ -206,6 +207,71 @@ if($DLPRules_Enabled -Like "Yes") {
             } else {
                 New-DlpPolicy -Name "Israel Protection of Privacy" -Mode $DLPRules_DeploymentMode -Template 'Israel Protection of Privacy';
                 Write-Output '***DLP for Israel Protection of Privacy Installed'
+            }
+        }
+        "Japan"{
+            if ($Clientdlp.Name -Like "Japan Financial Data") {
+                Write-Output '***DLP for Japan Financial Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "Japan Financial Data" -Mode $DLPRules_DeploymentMode -Template 'Japan Financial Data';
+                Write-Output '***DLP for Japan Financial Data Installed'               
+            }
+           
+            if ($Clientdlp.Name -Like "Japan Personally Identifiable Information (PII) Data") {
+                Write-Output '***DLP for Japan Personally Identifiable Information (PII) Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "Japan Personally Identifiable Information (PII) Data" -Mode $DLPRules_DeploymentMode -Template 'Japan Personally Identifiable Information (PII) Data';
+                Write-Output '***DLP for Japan Personally Identifiable Information (PII) Data Installed'
+            }
+
+            if ($Clientdlp.Name -Like "Japan Protection of Personal Information") {
+                Write-Output '***DLP for Japan Protection of Personal Information Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "Japan Protection of Personal Information" -Mode $DLPRules_DeploymentMode -Template 'Japan Protection of Personal Information';
+                Write-Output '***DLP for Japan Protection of Personal Information Installed'
+            }
+        }
+        "UK"{
+            if ($Clientdlp.Name -Like "U.K. Access to Medical Reports Act") {
+                Write-Output '***DLP for U.K. Access to Medical Reports Act Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Access to Medical Reports Act" -Mode $DLPRules_DeploymentMode -Template 'U.K. Access to Medical Reports Act';
+                Write-Output '***DLP for U.K. Access to Medical Reports Act'               
+            }
+           
+            if ($Clientdlp.Name -Like "U.K. Data Protection Act") {
+                Write-Output '***DLP for U.K. Data Protection Act Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Data Protection Act" -Mode $DLPRules_DeploymentMode -Template 'U.K. Data Protection Act';
+                Write-Output '***DLP for U.K. Data Protection Act Installed'
+            }
+
+            if ($Clientdlp.Name -Like "U.K. Financial Data") {
+                Write-Output '***DLP for U.K. Financial Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Financial Data" -Mode $DLPRules_DeploymentMode -Template 'U.K. Financial Data';
+                Write-Output '***DLP for U.K. Financial Data Installed'
+            }
+            
+            if ($Clientdlp.Name -Like "U.K. Personal Information Online Code of Practice (PIOCP)") {
+                Write-Output '***DLP for U.K. Personal Information Online Code of Practice (PIOCP) Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Personal Information Online Code of Practice (PIOCP)" -Mode $DLPRules_DeploymentMode -Template 'U.K. Personal Information Online Code of Practice (PIOCP)';
+                Write-Output '***DLP for U.K. Personal Information Online Code of Practice (PIOCP) Installed'               
+            }
+           
+            if ($Clientdlp.Name -Like "U.K. Personally Identifiable Information (PII) Data") {
+                Write-Output '***DLP for U.K. Personally Identifiable Information (PII) Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Personally Identifiable Information (PII) Data" -Mode $DLPRules_DeploymentMode -Template 'U.K. Personally Identifiable Information (PII) Data';
+                Write-Output '***DLP for U.K. Personally Identifiable Information (PII) Data Installed'
+            }
+
+            if ($Clientdlp.Name -Like "U.K. Privacy and Electronic Communications Regulations") {
+                Write-Output '***DLP for U.K. Privacy and Electronic Communications Regulations Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Privacy and Electronic Communications Regulations" -Mode $DLPRules_DeploymentMode -Template 'U.K. Privacy and Electronic Communications Regulations';
+                Write-Output '***DLP for U.K. Privacy and Electronic Communications Regulations Installed'
             }
         }
         default{
