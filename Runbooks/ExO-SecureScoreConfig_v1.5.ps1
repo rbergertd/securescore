@@ -228,7 +228,7 @@ if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Ye
         Write-Output '***Configuration for ATP Mailbox and Default ATP Policies Already Exist'
     }
     else {
-        New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domain)" -Name ATPRedirectedMessages -DisplayName ATPRedirectedMessages -Password (ConvertTo-SecureString -AsPlainText -Force (([char[]]([char]33 .. [char]95) + ([char[]]([char]97 .. [char]126)) + 0 .. 9 | sort { Get-Random })[0 .. 8] -join '')) -MicrosoftOnlineServicesID "ATPRedirectedMessages@$($Domains[0].Name)"
+        New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domain)" -Name ATPRedirectedMessages -DisplayName ATPRedirectedMessages -Password (ConvertTo-SecureString -AsPlainText -Force (([char[]]([char]33 .. [char]95) + ([char[]]([char]97 .. [char]126)) + 0 .. 9 | sort { Get-Random })[0 .. 8] -join '')) -MicrosoftOnlineServicesID "ATPRedirectedMessages@$($Domain)"
         Set-Mailbox -Identity "ATPRedirectedMessages@$($Domain)" -HiddenFromAddressListsEnabled $True
         Add-MailboxPermission -Identity "ATPRedirectedMessages@$($Domain)" -AutoMapping $false -InheritanceType All -User $cred.UserName -AccessRights FullAccess
 
