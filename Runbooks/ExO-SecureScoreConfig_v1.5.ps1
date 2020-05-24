@@ -50,9 +50,9 @@ if($ClientForwardBlockRules_Enabled -Like "Yes") {
 }
 
 #Automation Variables
-DLPRules_Enabled = Get-AutomationVariable -Name "DLPRules_Enabled"
-DLPRules_Selection = Get-AutomationVariable -Name "DLPRules_Selection"
-DLPRules_DeploymentMode = Get-AutomationVariable -Name "DLPRules_DeploymentMode"
+$DLPRules_Enabled = Get-AutomationVariable -Name "DLPRules_Enabled"
+$DLPRules_Selection = Get-AutomationVariable -Name "DLPRules_Selection"
+$DLPRules_DeploymentMode = Get-AutomationVariable -Name "DLPRules_DeploymentMode"
 
 #debug: $DLPRules_Enabled = "Yes"
 #debug: $DLPRules_Selection = "US" #Available options are US,Australia, Canada, France, Germany, Isreal
