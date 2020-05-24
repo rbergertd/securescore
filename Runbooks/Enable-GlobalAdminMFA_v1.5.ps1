@@ -10,7 +10,7 @@ $multiFactor.State = "Enforced"
 $multiFactor.RememberDevicesNotIssuedBefore = (Get-Date) 
 $multiFactorOff = @()
 $domains = Get-MsolDomain
-$secureScoreUser = "SecureScore@$($Domains[0].Name)"
+$secureScoreUser = Get-AutomationVariable -Name "User"
 
 
 #For all users turn MFA on
