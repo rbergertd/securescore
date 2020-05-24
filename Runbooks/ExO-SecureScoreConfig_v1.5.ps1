@@ -11,7 +11,7 @@ $Clientrules = Get-TransportRule | Select Name
 $Clientdlp = Get-DlpPolicy
 $AtpMailbox = Get-Mailbox
 $Domains = (Get-AcceptedDomain | Where-Object {$_.Default -eq $true}) 
-$DomainsName = (Get-AcceptedDomain | Where-Object {$_.Default -eq $true}).Name
+$Domain = Get-AutomationVariable -Name "SCM_Domain"
 $SafeAttachmentPolicies = Get-SafeAttachmentPolicy
 $SafeLinksPolicies = Get-SafeLinksPolicy
 
@@ -21,9 +21,8 @@ $SafeLinksPolicies = Get-SafeLinksPolicy
 #Enable Outbound Spam Filtering Rules
 #Automation Variables
 $OutboundSpamFilteringRules_Enabled = Get-AutomationVariable -Name "OutboundSpamFilteringRules_Enabled"
-Get-AcceptedDomain
-#debug
-#$OutboundSpamFilteringRules_Enabled = "Yes"
+
+#debug : $OutboundSpamFilteringRules_Enabled = "Yes"
 
 if($OutboundSpamFilteringRules_Enabled -Like "Yes") {
     Get-HostedOutboundSpamFilterPolicy | Set-HostedOutboundSpamFilterPolicy -NotifyOutboundSpam $true -NotifyOutboundSpamRecipients $NotifyOutboundSpamRecipients
@@ -33,8 +32,7 @@ if($OutboundSpamFilteringRules_Enabled -Like "Yes") {
 #Automation Variables
 $ClientForwardBlockRules_Enabled = Get-AutomationVariable -Name "ClientForwardBlockRules_Enabled" 
 
-#debug
-#$ClientForwardBlockRules_Enabled = "Yes"
+#debug: $ClientForwardBlockRules_Enabled = "Yes"
 
 if($ClientForwardBlockRules_Enabled -Like "Yes") {
     
@@ -52,14 +50,13 @@ if($ClientForwardBlockRules_Enabled -Like "Yes") {
 }
 
 #Automation Variables
-#DLPRules_Enabled = Get-AutomationVariable -Name "DLPRules_Enabled"
-#DLPRules_Selection = Get-AutomationVariable -Name "DLPRules_Selection"
-#DLPRules_DeploymentMode = Get-AutomationVariable -Name "DLPRules_DeploymentMode"
+$DLPRules_Enabled = Get-AutomationVariable -Name "DLPRules_Enabled"
+$DLPRules_Selection = Get-AutomationVariable -Name "DLPRules_Selection"
+$DLPRules_DeploymentMode = Get-AutomationVariable -Name "DLPRules_DeploymentMode"
 
-#debug
-#$DLPRules_Enabled = "Yes"
-#$DLPRules_Selection = "US" #Available options are US,Australia, Canada, France, Germany, Isreal
-#$DLPRules_DeploymentMode= "AuditAndNotify"
+#debug: $DLPRules_Enabled = "Yes"
+#debug: $DLPRules_Selection = "US" #Available options are US,Australia, Canada, France, Germany, Isreal
+#debug: $DLPRules_DeploymentMode= "AuditAndNotify"
 
 if($DLPRules_Enabled -Like "Yes") {
 
@@ -73,12 +70,20 @@ if($DLPRules_Enabled -Like "Yes") {
                 Write-Output '***DLP for U.S. State Breach Notification Laws Installed'               
             }
            
-            if ($Clientdlp.Name -Like "U.S. Personally Identifiable Information (PII) Data") {
-                Write-Output '***DLP for U.S. State Breach Notification Laws Already Exists -- DLP Rule Not Installed'
+            if ($Clientdlp.Name -Like "U.S. State Social Security Number Confidentiality Laws") {
+                Write-Output '***DLP for U.S. State Social Security Number Confidentiality Laws Already Exists -- DLP Rule Not Installed'
             } else {
-                New-DlpPolicy -Name "U.S. Personally Identifiable Information (PII) Data" -Mode $DLPRules_DeploymentMode -Template 'U.S. Personally Identifiable Information (PII) Data';
-                Write-Output '***DLP for U.S. State Breach Notification Laws Installed'
+                New-DlpPolicy -Name "U.S. State Social Security Number Confidentiality Laws" -Mode $DLPRules_DeploymentMode -Template 'U.S. State Social Security Number Confidentiality Laws';
+                Write-Output '***DLP for U.S. State Social Security Number Confidentiality Laws Installed'
             }
+
+            if ($Clientdlp.Name -Like "U.S. Financial Data") {
+                Write-Output '***DLP for U.S. Financial Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.S. Financial Data" -Mode $DLPRules_DeploymentMode -Template 'U.S. Financial Data';
+                Write-Output '***DLP for U.S. Financial Data Installed'
+            }
+
         }
         "Australia"{
             if ($Clientdlp.Name -Like "Australia Financial Data") {
@@ -116,13 +121,6 @@ if($DLPRules_Enabled -Like "Yes") {
                 New-DlpPolicy -Name "Canada Health Information Act (HIA)" -Mode $DLPRules_DeploymentMode -Template 'Canada Health Information Act (HIA)';
                 Write-Output '***DLP for Canada Health Information Act (HIA) Installed'
             }
-
-            if ($Clientdlp.Name -Like "Canada Personal Health Act (PHIPA) – Ontario") {
-                Write-Output '***DLP for Canada Personal Health Act (PHIPA) – Ontario Data Already Exists -- DLP Rule Not Installed'
-            } else {
-                New-DlpPolicy -Name "Canada Personal Health Act (PHIPA) – Ontario" -Mode $DLPRules_DeploymentMode -Template 'Canada Personal Health Act (PHIPA) – Ontario';
-                Write-Output '***DLP for Canada Personal Health Act (PHIPA) – Ontario Installed'
-            }
             
             if ($Clientdlp.Name -Like "Canada Personal Health Information Act (PHIA) - Manitoba") {
                 Write-Output '***DLP for Canada Personal Health Information Act (PHIA) - Manitoba Already Exists -- DLP Rule Not Installed'
@@ -138,11 +136,11 @@ if($DLPRules_Enabled -Like "Yes") {
                 Write-Output '***DLP for Canada Personal Information Protection Act (PIPA) Installed'
             }
 
-            if ($Clientdlp.Name -Like "Canada Personally Identifiable Protection Act (PIPEDA)") {
-                Write-Output '***DLP for Canada Personally Identifiable Protection Act (PIPEDA) Already Exists -- DLP Rule Not Installed'
+            if ($Clientdlp.Name -Like "Canada Personal Information Protection Act (PIPEDA)") {
+                Write-Output '***DLP for Canada Personal Information Protection Act (PIPEDA) Already Exists -- DLP Rule Not Installed'
             } else {
-                New-DlpPolicy -Name "Canada Personally Identifiable Protection Act (PIPEDA)" -Mode $DLPRules_DeploymentMode -Template 'Canada Personally Identifiable Protection Act (PIPEDA)';
-                Write-Output '***DLP for Canada Personally Identifiable Protection Act (PIPEDA) Installed'
+                New-DlpPolicy -Name "Canada Personal Information Protection Act (PIPEDA)" -Mode $DLPRules_DeploymentMode -Template 'Canada Personal Information Protection Act (PIPEDA)';
+                Write-Output '***DLP for Canada Personal Information Protection Act (PIPEDA) Installed'
             }
 
             if ($Clientdlp.Name -Like "Canada Personally Identifiable Information (PII) Data") {
@@ -211,6 +209,71 @@ if($DLPRules_Enabled -Like "Yes") {
                 Write-Output '***DLP for Israel Protection of Privacy Installed'
             }
         }
+        "Japan"{
+            if ($Clientdlp.Name -Like "Japan Financial Data") {
+                Write-Output '***DLP for Japan Financial Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "Japan Financial Data" -Mode $DLPRules_DeploymentMode -Template 'Japan Financial Data';
+                Write-Output '***DLP for Japan Financial Data Installed'               
+            }
+           
+            if ($Clientdlp.Name -Like "Japan Personally Identifiable Information (PII) Data") {
+                Write-Output '***DLP for Japan Personally Identifiable Information (PII) Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "Japan Personally Identifiable Information (PII) Data" -Mode $DLPRules_DeploymentMode -Template 'Japan Personally Identifiable Information (PII) Data';
+                Write-Output '***DLP for Japan Personally Identifiable Information (PII) Data Installed'
+            }
+
+            if ($Clientdlp.Name -Like "Japan Protection of Personal Information") {
+                Write-Output '***DLP for Japan Protection of Personal Information Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "Japan Protection of Personal Information" -Mode $DLPRules_DeploymentMode -Template 'Japan Protection of Personal Information';
+                Write-Output '***DLP for Japan Protection of Personal Information Installed'
+            }
+        }
+        "UK"{
+            if ($Clientdlp.Name -Like "U.K. Access to Medical Reports Act") {
+                Write-Output '***DLP for U.K. Access to Medical Reports Act Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Access to Medical Reports Act" -Mode $DLPRules_DeploymentMode -Template 'U.K. Access to Medical Reports Act';
+                Write-Output '***DLP for U.K. Access to Medical Reports Act'               
+            }
+           
+            if ($Clientdlp.Name -Like "U.K. Data Protection Act") {
+                Write-Output '***DLP for U.K. Data Protection Act Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Data Protection Act" -Mode $DLPRules_DeploymentMode -Template 'U.K. Data Protection Act';
+                Write-Output '***DLP for U.K. Data Protection Act Installed'
+            }
+
+            if ($Clientdlp.Name -Like "U.K. Financial Data") {
+                Write-Output '***DLP for U.K. Financial Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Financial Data" -Mode $DLPRules_DeploymentMode -Template 'U.K. Financial Data';
+                Write-Output '***DLP for U.K. Financial Data Installed'
+            }
+            
+            if ($Clientdlp.Name -Like "U.K. Personal Information Online Code of Practice (PIOCP)") {
+                Write-Output '***DLP for U.K. Personal Information Online Code of Practice (PIOCP) Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Personal Information Online Code of Practice (PIOCP)" -Mode $DLPRules_DeploymentMode -Template 'U.K. Personal Information Online Code of Practice (PIOCP)';
+                Write-Output '***DLP for U.K. Personal Information Online Code of Practice (PIOCP) Installed'               
+            }
+           
+            if ($Clientdlp.Name -Like "U.K. Personally Identifiable Information (PII) Data") {
+                Write-Output '***DLP for U.K. Personally Identifiable Information (PII) Data Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Personally Identifiable Information (PII) Data" -Mode $DLPRules_DeploymentMode -Template 'U.K. Personally Identifiable Information (PII) Data';
+                Write-Output '***DLP for U.K. Personally Identifiable Information (PII) Data Installed'
+            }
+
+            if ($Clientdlp.Name -Like "U.K. Privacy and Electronic Communications Regulations") {
+                Write-Output '***DLP for U.K. Privacy and Electronic Communications Regulations Already Exists -- DLP Rule Not Installed'
+            } else {
+                New-DlpPolicy -Name "U.K. Privacy and Electronic Communications Regulations" -Mode $DLPRules_DeploymentMode -Template 'U.K. Privacy and Electronic Communications Regulations';
+                Write-Output '***DLP for U.K. Privacy and Electronic Communications Regulations Installed'
+            }
+        }
         default{
             Write-Output '**No DLP Policies Deployed'
         }
@@ -221,9 +284,8 @@ if($DLPRules_Enabled -Like "Yes") {
 $SafeAttachmentRules_Enabled = Get-AutomationVariable -Name "SafeAttachmentRules_Enabled"
 $SafeLinkRules_Enabled = Get-AutomationVariable -Name "SafeLinkRules_Enabled"
 
-#debug
-#$SafeAttachmentRules_Enabled = "Yes"
-#$SafeLinkRules_Enabled = "Yes"
+#debug: $SafeAttachmentRules_Enabled = "Yes"
+#debug: $SafeLinkRules_Enabled = "Yes"
 
 if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Yes") {
 
@@ -232,20 +294,20 @@ if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Ye
         Write-Output '***Configuration for ATP Mailbox and Default ATP Policies Already Exist'
     }
     else {
-        New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domains[0].Name)" -Name ATPRedirectedMessages -DisplayName ATPRedirectedMessages -Password (ConvertTo-SecureString -AsPlainText -Force (([char[]]([char]33 .. [char]95) + ([char[]]([char]97 .. [char]126)) + 0 .. 9 | sort { Get-Random })[0 .. 8] -join '')) -MicrosoftOnlineServicesID "ATPRedirectedMessages@$($Domains[0].Name)"
-        Set-Mailbox -Identity "ATPRedirectedMessages@$($Domains[0].Name)" -HiddenFromAddressListsEnabled $True
-        Add-MailboxPermission -Identity "ATPRedirectedMessages@$($Domains[0].Name)" -AutoMapping $false -InheritanceType All -User $cred.UserName -AccessRights FullAccess
+        New-Mailbox -PrimarySmtpAddress "ATPRedirectedMessages@$($Domain)" -Name ATPRedirectedMessages -DisplayName ATPRedirectedMessages -Password (ConvertTo-SecureString -AsPlainText -Force (([char[]]([char]33 .. [char]95) + ([char[]]([char]97 .. [char]126)) + 0 .. 9 | sort { Get-Random })[0 .. 8] -join '')) -MicrosoftOnlineServicesID "ATPRedirectedMessages@$($Domain)"
+        Set-Mailbox -Identity "ATPRedirectedMessages@$($Domain)" -HiddenFromAddressListsEnabled $True
+        Add-MailboxPermission -Identity "ATPRedirectedMessages@$($Domain)" -AutoMapping $false -InheritanceType All -User $cred.UserName -AccessRights FullAccess
 
         # Create a new Safe Attachment policy.
         if($SafeAttachmentRules_Enabled -Like "Yes") {
-            New-SafeAttachmentPolicy -Name 'Default Safe Attachment Policy' -AdminDisplayName 'Default Safe Attachment Policy' -Action Replace -Redirect $True -RedirectAddress "ATPRedirectedMessages@$($Domains[0].Name)" -Enable $True
-            New-SafeAttachmentRule -Name 'Default Safe Attachment Rule' -RecipientDomainIs $Domains.Name -SafeAttachmentPolicy 'Default Safe Attachment Policy' -Enabled $True
+            New-SafeAttachmentPolicy -Name 'Default Safe Attachment Policy' -AdminDisplayName 'Default Safe Attachment Policy' -Action Replace -Redirect $True -RedirectAddress "ATPRedirectedMessages@$($Domain)" -Enable $True
+            New-SafeAttachmentRule -Name 'Default Safe Attachment Rule' -RecipientDomainIs $Domain -SafeAttachmentPolicy 'Default Safe Attachment Policy' -Enabled $True
         }
 
         # Create a new Safe Links policy.
         if($SafeLinkRules_Enabled -Like "Yes") {
             New-SafeLinksPolicy -Name Default -AdminDisplayName Default -TrackClicks $true -IsEnabled $true -AllowClickThrough $false -ScanUrls $true
-            New-SafeLinksRule -Name Default -RecipientDomainIs $Domains.Name -SafeLinksPolicy Default -Enabled $true
+            New-SafeLinksRule -Name Default -RecipientDomainIs $Domain -SafeLinksPolicy Default -Enabled $true
         }
     }
 }
@@ -254,8 +316,7 @@ if($SafeAttachmentRules_Enabled -Like "Yes" -Or $SafeLinkRules_Enabled -Like "Ye
 #Automation Variables
 $AnonymousCalendarSharingRules_Enabled = Get-AutomationVariable -Name "AnonymousCalendarSharingRules_Enabled"
 
-#debug
-#$AnonymousCalendarSharingRules_Enabled = "Yes"
+#debug: $AnonymousCalendarSharingRules_Enabled = "Yes"
 
 if($AnonymousCalendarSharingRules_Enabled -Like "Yes") {
     Get-SharingPolicy | Set-SharingPolicy -Domains @{ Remove = "Anonymous:CalendarSharingFreeBusyReviewer"; Add = "Anonymous:0" }
@@ -267,8 +328,7 @@ if($AnonymousCalendarSharingRules_Enabled -Like "Yes") {
 #Automation Variables
 $MailboxAuditingRules_Enabled = Get-AutomationVariable -Name "MailboxAuditingRules_Enabled"
 
-#debug
-#$MailboxAuditingRules_Enabled = "Yes"
+#debug: $MailboxAuditingRules_Enabled = "Yes"
 
 if($MailboxAuditingRules_Enabled -Like "Yes") {
     Get-Mailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "UserMailbox" -or RecipientTypeDetails -eq "SharedMailbox" -or RecipientTypeDetails -eq "RoomMailbox" -or RecipientTypeDetails -eq "DiscoveryMailbox"} | Set-Mailbox -AuditEnabled $true -AuditLogAgeLimit 730 -AuditAdmin Update, MoveToDeletedItems, SoftDelete, HardDelete, SendAs, SendOnBehalf, Create, UpdateFolderPermission -AuditDelegate Update, SoftDelete, HardDelete, SendAs, Create, UpdateFolderPermissions, MoveToDeletedItems, SendOnBehalf -AuditOwner UpdateFolderPermission, MailboxLogin, Create, SoftDelete, HardDelete, Update, MoveToDeletedItems 
