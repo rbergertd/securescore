@@ -76,14 +76,6 @@ if($DLPRules_Enabled -Like "Yes") {
                 New-DlpPolicy -Name "U.S. State Social Security Number Confidentiality Laws" -Mode $DLPRules_DeploymentMode -Template 'U.S. State Social Security Number Confidentiality Laws';
                 Write-Output '***DLP for U.S. State Social Security Number Confidentiality Laws Installed'
             }
-
-            if ($Clientdlp.Name -Like "U.S. Financial Data") {
-                Write-Output '***DLP for U.S. Financial Data Already Exists -- DLP Rule Not Installed'
-            } else {
-                New-DlpPolicy -Name "U.S. Financial Data" -Mode $DLPRules_DeploymentMode -Template 'U.S. Financial Data';
-                Write-Output '***DLP for U.S. Financial Data Installed'
-            }
-
         }
         "Australia"{
             if ($Clientdlp.Name -Like "Australia Financial Data") {
